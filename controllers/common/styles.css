@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+ol {
+    margin-left: 20px;
+}
+
+section {
+    margin-bottom: 15px;
+}
+
+.signature {
+    margin-top: 30px;
+    font-weight: bold;
+}

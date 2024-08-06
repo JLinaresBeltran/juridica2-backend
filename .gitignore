@@ -1,0 +1,9 @@
+node_modules
+*.log
+*.md
+tests/
+coverage/
+tmp/.DS_Store
+**/.DS_Store
+**/.DS_Store
+.env
