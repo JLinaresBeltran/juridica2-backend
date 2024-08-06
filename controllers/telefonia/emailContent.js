@@ -3,7 +3,7 @@ const path = require('path');
 // Función que genera el HTML del correo electrónico
 function generateEmailHTML(lead) {
     // URL base del servidor donde están alojadas las imágenes
-    const serverUrl = 'https://juridica2-4cc24306e618.herokuapp.com/images';
+    const serverUrl = 'https://juridica2-441e055ba05c.herokuapp.com/images';
 
     // Log para verificar los datos recibidos
     console.log('Generando correo electrónico para lead:', lead);
