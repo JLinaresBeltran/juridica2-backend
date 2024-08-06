@@ -43,7 +43,7 @@ console.log("CHAT_SERVICE_URL:", process.env.CHAT_SERVICE_URL);
 const corsOptions = {
     origin: [
         'https://www.juridicaenlinea.co', 
-        'https://juridica2-chat-3d0a7f266d9c.herokuapp.com', // Actualizado con la URL correcta del frontend
+        'https://juridica2-chat-3d0a7f266d9c.herokuapp.com',
         'http://localhost:3000'
     ],
     optionsSuccessStatus: 200,
@@ -52,32 +52,27 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-// Aplicar CORS antes de cualquier otra middleware
 app.use(cors(corsOptions));
 console.log("CORS configurado con:", corsOptions);
 
-// Habilitar pre-flight para todas las rutas
 app.options('*', cors(corsOptions));
 
-// Middleware para manejar específicamente las solicitudes OPTIONS
 app.use((req, res, next) => {
-  console.log(`Recibida solicitud ${req.method} para ${req.url}`);
-  if (req.method === 'OPTIONS') {
-    console.log('Recibida solicitud OPTIONS');
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.sendStatus(200);
-  } else {
-    next();
-  }
+    console.log(`Recibida solicitud ${req.method} para ${req.url}`);
+    if (req.method === 'OPTIONS') {
+        console.log('Recibida solicitud OPTIONS');
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.sendStatus(200);
+    } else {
+        next();
+    }
 });
 
-// Middleware para parsear JSON
 app.use(express.json({ limit: '50mb' }));
 
-// Middleware de logging
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
     console.log('Headers:', req.headers);
@@ -90,7 +85,7 @@ const chatProxy = createProxyMiddleware({
     target: process.env.CHAT_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: {
-      '^/chat': '',
+        '^/chat': '',
     },
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
@@ -149,7 +144,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
     console.log('Rutas configuradas:');
-    console.log('- /');
+    console.log('- / (Landing page)');
     console.log('- /telefonia');
     console.log('- /servicios-publicos');
     console.log('- /chat (proxy)');
@@ -157,4 +152,4 @@ server.listen(PORT, () => {
     console.log('- /healthcheck');
 });
 
-module.exports = app;// Force redeploy
+module.exports = app;
