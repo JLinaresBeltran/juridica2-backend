@@ -41,7 +41,11 @@ console.log("CHAT_SERVICE_URL:", process.env.CHAT_SERVICE_URL);
 
 // Configuración de CORS
 const corsOptions = {
-    origin: ['https://www.juridicaenlinea.co', 'https://juridica2-chat-a9b8600f6ca3.herokuapp.com', 'http://localhost:3000'],
+    origin: [
+        'https://www.juridicaenlinea.co', 
+        'https://juridica2-chat-3d0a7f266d9c.herokuapp.com', // Actualizado con la URL correcta del frontend
+        'http://localhost:3000'
+    ],
     optionsSuccessStatus: 200,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
