@@ -85,7 +85,7 @@ const chatProxy = createProxyMiddleware({
     target: process.env.CHAT_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: {
-        '^/chat': '',
+        '^/chat': '/',
     },
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
