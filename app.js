@@ -100,24 +100,21 @@ const chatProxy = createProxyMiddleware({
 app.use('/chat', chatProxy);
 console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
 
-// Manejo específico para /chat/room
-app.get('/chat/room', (req, res, next) => {
-    console.log('Redirigiendo a /chat/room');
-    next();
-}, chatProxy);
-
 // Middleware para servir archivos estáticos
 const faviconPath = path.join(__dirname, 'landing/imagenespng/favicon');
 const landingPath = path.join(__dirname, 'landing');
 const imagesPath = path.join(__dirname, 'utils/images');
+const frontendBuildPath = path.join(__dirname, 'frontend-build'); // Ajusta esta ruta según sea necesario
 
 console.log("Ruta absoluta de favicon:", faviconPath);
 console.log("Ruta absoluta de landing:", landingPath);
 console.log("Ruta absoluta de images:", imagesPath);
+console.log("Ruta absoluta del build del frontend:", frontendBuildPath);
 
 app.use('/favicon', express.static(faviconPath));
 app.use(express.static(landingPath));
 app.use('/images', express.static(imagesPath));
+app.use('/chat', express.static(frontendBuildPath)); // Servir archivos estáticos del frontend
 
 // Healthcheck
 app.get('/healthcheck', (req, res) => {
@@ -127,6 +124,11 @@ app.get('/healthcheck', (req, res) => {
 // Servir index.html desde la ruta raíz
 app.get('/', (req, res) => {
     res.sendFile(path.join(landingPath, 'index.html'));
+});
+
+// Servir index.html para la ruta /chat/room y cualquier otra ruta bajo /chat
+app.get(['/chat', '/chat/*'], (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
 });
 
 // Rutas de la aplicación
@@ -147,8 +149,7 @@ server.listen(PORT, () => {
     console.log('- / (Landing page)');
     console.log('- /telefonia');
     console.log('- /servicios-publicos');
-    console.log('- /chat (proxy)');
-    console.log('- /chat/room (proxy específico)');
+    console.log('- /chat (proxy y frontend)');
     console.log('- /healthcheck');
 });
 
