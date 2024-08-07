@@ -119,7 +119,7 @@ app.get('*', (req, res, next) => {
     } else if (req.path === '/') {
         next(); // Deja que la ruta raíz sea manejada por el middleware anterior
     } else {
-        res.redirect('/chat'); // Redirige a /chat para otras rutas
+        res.redirect('/'); // Redirige a la pagina principal.
     }
 });
 
