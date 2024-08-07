@@ -43,6 +43,7 @@ console.log("CHAT_SERVICE_URL:", process.env.CHAT_SERVICE_URL);
 const corsOptions = {
     origin: [
         'https://www.juridicaenlinea.co', 
+        'http://www.juridicaenlinea.co',
         'https://juridica2-chat-3d0a7f266d9c.herokuapp.com',
         'http://localhost:3000'
     ],
@@ -55,28 +56,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 console.log("CORS configurado con:", corsOptions);
 
-app.options('*', cors(corsOptions));
-
-app.use((req, res, next) => {
-    console.log(`Recibida solicitud ${req.method} para ${req.url}`);
-    if (req.method === 'OPTIONS') {
-        console.log('Recibida solicitud OPTIONS');
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        res.header('Access-Control-Allow-Credentials', 'true');
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
-
 app.use(express.json({ limit: '50mb' }));
 
+// Logging mejorado
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
     console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
     next();
 });
 
@@ -96,25 +81,18 @@ const chatProxy = createProxyMiddleware({
     }
 });
 
-// Usar el proxy para /chat
-app.use('/chat', chatProxy);
-console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
-
 // Middleware para servir archivos estáticos
 const faviconPath = path.join(__dirname, 'landing/imagenespng/favicon');
 const landingPath = path.join(__dirname, 'landing');
 const imagesPath = path.join(__dirname, 'utils/images');
-const frontendBuildPath = path.join(__dirname, 'frontend-build'); // Ajusta esta ruta según sea necesario
 
 console.log("Ruta absoluta de favicon:", faviconPath);
 console.log("Ruta absoluta de landing:", landingPath);
 console.log("Ruta absoluta de images:", imagesPath);
-console.log("Ruta absoluta del build del frontend:", frontendBuildPath);
 
 app.use('/favicon', express.static(faviconPath));
 app.use(express.static(landingPath));
 app.use('/images', express.static(imagesPath));
-app.use('/chat', express.static(frontendBuildPath)); // Servir archivos estáticos del frontend
 
 // Healthcheck
 app.get('/healthcheck', (req, res) => {
@@ -126,14 +104,24 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(landingPath, 'index.html'));
 });
 
-// Servir index.html para la ruta /chat/room y cualquier otra ruta bajo /chat
-app.get(['/chat', '/chat/*'], (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, 'index.html'));
-});
+// Usar el proxy para /chat
+app.use('/chat', chatProxy);
+console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
 
 // Rutas de la aplicación
 app.use('/telefonia', logRouteMiddleware('/telefonia'), telefoniaRoutes);
 app.use('/servicios-publicos', logRouteMiddleware('/servicios-publicos'), serviciosPublicosRoutes);
+
+// Manejar todas las demás rutas
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/chat')) {
+        next(); // Deja que el proxy maneje las rutas de chat
+    } else if (req.path === '/') {
+        next(); // Deja que la ruta raíz sea manejada por el middleware anterior
+    } else {
+        res.redirect('/chat'); // Redirige a /chat para otras rutas
+    }
+});
 
 // Middleware para manejar rutas no encontradas y errores
 app.use(notFoundHandler);
@@ -149,7 +137,7 @@ server.listen(PORT, () => {
     console.log('- / (Landing page)');
     console.log('- /telefonia');
     console.log('- /servicios-publicos');
-    console.log('- /chat (proxy y frontend)');
+    console.log('- /chat (proxy al frontend)');
     console.log('- /healthcheck');
 });
 
