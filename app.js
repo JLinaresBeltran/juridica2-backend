@@ -106,6 +106,7 @@ app.get('/', (req, res) => {
 
 // Usar el proxy para /chat
 app.use('/chat', chatProxy);
+app.use('/chat/*', chatProxy);
 console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
 
 // Rutas de la aplicación
@@ -113,13 +114,11 @@ app.use('/telefonia', logRouteMiddleware('/telefonia'), telefoniaRoutes);
 app.use('/servicios-publicos', logRouteMiddleware('/servicios-publicos'), serviciosPublicosRoutes);
 
 // Manejar todas las demás rutas
-app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/chat')) {
-        next(); // Deja que el proxy maneje las rutas de chat
-    } else if (req.path === '/') {
-        next(); // Deja que la ruta raíz sea manejada por el middleware anterior
+app.get('*', (req, res) => {
+    if (req.path === '/') {
+        res.sendFile(path.join(landingPath, 'index.html'));
     } else {
-        res.redirect('/'); // Redirige a la pagina principal.
+        res.redirect('/chat');
     }
 });
 
