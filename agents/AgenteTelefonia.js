@@ -82,17 +82,18 @@ const prompts = {
    "{junior_analysis}\n\n" +
    "Realiza las siguientes tareas:\n" +
    "1. Verifica la precisión de la clasificación y los datos extraídos por el abogado junior.\n" +
-   "2. Redacta los HECHOS de manera clara, concisa y jurídicamente relevante, pero incorporando el estado emocional del cliente:\n" +
+   "2. Redacta los HECHOS de manera clara, concisa y jurídicamente relevante:\n" +
    "   - Ordénalos de manera lógica y cronológica.\n" +
    "   - Incluye todos los datos relevantes proporcionados por el junior.\n" +
    "   - Utiliza un lenguaje formal y técnico apropiado para una reclamación legal.\n" +
-   "   - Incorpora de manera estratégica expresiones que reflejen la impotencia y malestar del cliente, sin comprometer la profesionalidad del documento.\n" +
-   "   - Mantén un balance entre la exposición objetiva de los hechos y la expresión de la experiencia subjetiva del cliente.\n" +
+   "   - Incorpora de manera estratégica expresiones que reflejen la impotencia y malestar del cliente únicamente en los últimos hechos, sin comprometer la profesionalidad del documento.\n" +
+   "   - Mantén un balance entre la exposición objetiva de los hechos y la expresión de la experiencia subjetiva del cliente en los ultimos hechos.\n" +
    "3. Formula una PETICIÓN efectiva:\n" +
    "   - Enfócate en los aspectos legalmente relevantes de la situación.\n" +
    "   - Hazla clara, concreta, contundente y bien fundamentada en los hechos presentados.\n" +
    "   - El objeto de la petición debe ser solicitar una solución específica al problema planteado.\n" +
    "   - Utiliza terminología legal apropiada.\n" +
+   "   - No incluyas plazos ni términos específicos para la resolución del problema.\n" +
    "4. Crea una REFERENCIA corta y descriptiva para el caso, utilizando la categoria principal, que refleje la naturaleza jurídica de la reclamación.\n\n" +
    "Proporciona ÚNICAMENTE la siguiente información en el formato especificado:\n\n" +
    "EMPRESA DE SERVICIOS: [Nombre comercial de la empresa (Razón social)]\n\n" +

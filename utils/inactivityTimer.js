@@ -5,7 +5,7 @@ function delayExecution(func, ...args) {
         setTimeout(() => {
             console.log("inactivityTimer: Ejecutando función después del delay"); // Log después del delay
             resolve(func(...args));
-        }, 5000); // Espera 3 minuto
+        }, 60000); // Espera 1 minuto
     });
     console.log("inactivityTimer: Finalización de delayExecution"); // Log final (este no se ejecutará realmente)
 }
