@@ -6,14 +6,13 @@ const path = require('path');
 const fs = require('fs').promises;
 
 // Determinar la ruta base del proyecto
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = path.resolve(__dirname, '..');
+
+// Definir la ruta del directorio de imágenes
 const imageDir = path.join(projectRoot, 'utils', 'images');
 
 // Configuración de la URL del servidor
-const isProduction = process.env.NODE_ENV === 'production';
-const BASE_URL = isProduction 
-    ? process.env.CHAT_SERVICE_URL 
-    : 'http://localhost:5000';  // Ajusta este puerto si es diferente en tu entorno local
+const BASE_URL = process.env.CHAT_SERVICE_URL || 'http://localhost:5000';
 const SERVER_URL = `${BASE_URL}/images`;
 
 class EmailModule {
