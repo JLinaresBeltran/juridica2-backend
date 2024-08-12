@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 
 // Determinar la ruta base del proyecto
 const projectRoot = path.resolve(__dirname, '..', '..');
+const imageDir = path.join(projectRoot, 'utils', 'images');
 
 // Configuración de la URL del servidor
 const isProduction = process.env.NODE_ENV === 'production';
@@ -78,6 +79,7 @@ class EmailModule {
         console.log('[emailModule] OutputDir:', outputDir);
         console.log('[emailModule] ServiceType:', serviceType);
         console.log('[emailModule] SERVER_URL:', SERVER_URL);
+        console.log('Directorio de imágenes:', imageDir);
 
         if (!serviceType) {
             throw new Error('ServiceType es requerido para enviar el email');
@@ -100,13 +102,14 @@ class EmailModule {
         const imageDir = path.join(projectRoot, 'backend', 'utils', 'images');
         console.log('Directorio de imágenes:', imageDir);
 
-        let imageFiles;
-        try {
-            imageFiles = await fs.readdir(imageDir);
-            console.log('Archivos de imágenes encontrados:', imageFiles);
-        } catch (error) {
-            console.error('Error al leer el directorio de imágenes:', error);
-            imageFiles = [];
+        let imageFiles = [];
+        if (process.env.NODE_ENV !== 'production') {
+            try {
+                imageFiles = await fs.readdir(imageDir);
+                console.log('Archivos de imágenes encontrados:', imageFiles);
+            } catch (error) {
+                console.error('Error al leer el directorio de imágenes:', error);
+            }
         }
 
         const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
