@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
 const { DocxGenerator, generateComplaintDocx } = require('../utils/docxGenerator');
-const { sendEmailWithAttachments } = require('../utils/emailTransporter');
+const { sendEmailWithAttachments } = require('../utils/emailModule');
 
 const secretKey = process.env.SECRET_KEY;
 const chatbotId = process.env.CHATBOT_ID_TELEFONIA;

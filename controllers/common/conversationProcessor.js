@@ -4,20 +4,23 @@ const path = require('path');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const AgenteTelefonia = require('../../agents/AgenteTelefonia');
-const { sendEmailWithFiles } = require('../../controllers/common/sendEmail');
+const emailModule = require('../../utils/emailModule');
 const { getLeadByDetails, getConversationById } = require('../../services/common/chatbaseService');
 const { generateDocx } = require('../../utils/generateDocx');
 
-// Definir la función generateFiles aquí
 async function generateFiles(documentContent, paths) {
   console.log('[generateFiles] Iniciando generación de archivos');
   const { docxPath } = paths;
 
-  console.log('[generateFiles] Generando archivo DOCX');
-  await generateDocx(documentContent, docxPath);
-  console.log(`[generateFiles] Archivo DOCX generado exitosamente: ${docxPath}`);
-
-  return { docxPath };
+  try {
+    console.log('[generateFiles] Generando archivo DOCX');
+    await generateDocx(documentContent, docxPath);
+    console.log(`[generateFiles] Archivo DOCX generado exitosamente: ${docxPath}`);
+    return { docxPath };
+  } catch (error) {
+    console.error('[generateFiles] Error al generar archivo DOCX:', error);
+    throw error;
+  }
 }
 
 async function processConversation(conversationId, serviceType, payload) {
@@ -29,19 +32,16 @@ async function processConversation(conversationId, serviceType, payload) {
     let lead = await getLeadByDetails(chatbotId, customerEmail, customerPhone);
     console.log('[processConversation] Lead obtenido:', JSON.stringify(lead, null, 2));
 
-    // Si no se encuentra un lead, creamos uno nuevo con los datos del payload
     if (!lead) {
       lead = {
         chatbotId,
         email: customerEmail,
         phone: customerPhone,
         name: customerName,
-        // Otros campos que puedas necesitar
       };
       console.log('[processConversation] Creando nuevo lead:', JSON.stringify(lead, null, 2));
     }
 
-    // Asegurarse de que el lead tenga un nombre
     lead.name = lead.name || customerName;
 
     const conversation = await getConversationById(chatbotId, conversationId);
@@ -83,7 +83,7 @@ async function processConversation(conversationId, serviceType, payload) {
     console.log('[processConversation] Archivos generados:', files);
 
     console.log('[processConversation] Enviando email con serviceType:', serviceType);
-    await sendEmailWithFiles(lead, outputDir, serviceType);
+    await emailModule.emailModule(lead, outputDir, serviceType);
     console.log('[processConversation] Email enviado correctamente.');
 
   } catch (error) {

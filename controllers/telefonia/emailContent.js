@@ -1,16 +1,9 @@
 const path = require('path');
 
 // Función que genera el HTML del correo electrónico
-function generateEmailHTML(lead) {
-    // URL base del servidor donde están alojadas las imágenes
-    const serverUrl = 'https://juridica2-441e055ba05c.herokuapp.com/images';
-
-    // Log para verificar los datos recibidos
-    console.log('Generando correo electrónico para lead:', lead);
-
-    // Retorna el contenido HTML del correo electrónico
-    const emailHTML = `
-    <!DOCTYPE html>
+function generateEmailHTML(lead, serverUrl) {
+    // Mantén todo el código HTML aquí
+    return `<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -211,7 +204,7 @@ function generateEmailHTML(lead) {
         <div class="card container-custom">
             <!-- Imagen de la cabecera -->
             <div class="header card-img-top position-relative">
-                <img src="${serverUrl}/imagen-superior.png" class="header-img">
+                <img src="cid:imagen-superior" class="header-img">
             </div>
             <!-- Texto de la cabecera -->
             <div class="header-text">Transforma tu Experiencia Legal</div>
@@ -249,15 +242,15 @@ function generateEmailHTML(lead) {
         </div>
         <!-- Contenedor de la imagen de servicios -->
         <div class="image-container text-center mt-4">
-            <img src="${serverUrl}/servicios.png" alt="Servicios" class="img-fluid">
+            <img src="cid:servicios" alt="Servicios" class="img-fluid">
         </div>
         <!-- Pie de página -->
         <div class="footer text-center mt-4">
-            <img src="${serverUrl}/logo1.png" class="logo img-fluid mb-3" alt="Logo Jurídica">
+            <img src="cid:logo1" class="logo img-fluid mb-3" alt="Logo Jurídica">
             <p>Disfruta de una mejor experiencia desde nuestra app</p>
             <div class="app-links d-flex justify-content-center mb-3">
-                <img src="${serverUrl}/google.png" alt="Google Play" class="img-fluid mr-2">
-                <img src="${serverUrl}/app.png" alt="App Store" class="img-fluid">
+                <img src="cid:google" alt="Google Play" class="img-fluid mr-2">
+                <img src="cid:app" alt="App Store" class="img-fluid">
             </div>
             <p>
                 <a href="#">Aviso Legal</a> | 
@@ -276,30 +269,22 @@ function generateEmailHTML(lead) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>`;
-
-    // Log para verificar el contenido HTML generado
-    console.log('HTML generado:', emailHTML);
-
-    return emailHTML;
 }
 
-// Función para obtener los archivos adjuntos
-function getAttachments() {
+function getAttachments(outputDir) {
     return [
-        { filename: 'documento.docx', path: path.join(__dirname, 'utils/output/output.docx') }
+        { filename: 'documento.docx', path: path.join(outputDir, 'output.docx') }
     ];
 }
 
-// Función para generar el contenido del email
-function generateEmailContent(lead) {
+function generateEmailContent(lead, serverUrl) {
     return {
         subject: `Reclamación para ${lead.name}`,
         text: `Estimado/a ${lead.name},\n\nAdjunto encontrará su documento de reclamación...`,
-        html: generateEmailHTML(lead)
+        html: generateEmailHTML(lead, serverUrl)
     };
 }
 
-// Exporta las funciones para su uso en otros módulos
 module.exports = {
     generateEmailContent,
     getAttachments

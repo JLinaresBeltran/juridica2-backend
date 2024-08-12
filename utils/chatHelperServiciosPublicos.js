@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 //const { convertHTMLToPDF } = require('../utils/pdfGenerator');
 const { convertHTMLToDOCX } = require('../utils/docxGenerator');
-const { sendEmailWithAttachments } = require('../utils/emailTransporter');
+const { sendEmailWithAttachments } = require('../utils/emailModule');
 
 const chatbotId = process.env.CHATBOT_ID_SERVICIOS_PUBLICOS;
 const secretKey = process.env.SECRET_KEY;
