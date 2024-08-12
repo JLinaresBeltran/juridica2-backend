@@ -204,7 +204,7 @@ function generateEmailHTML(lead, serverUrl) {
         <div class="card container-custom">
             <!-- Imagen de la cabecera -->
             <div class="header card-img-top position-relative">
-                <img src="cid:imagen-superior" class="header-img">
+                <img src="${serverUrl}/images/imagen-superior.png" class="header-img">
             </div>
             <!-- Texto de la cabecera -->
             <div class="header-text">Transforma tu Experiencia Legal</div>
