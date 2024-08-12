@@ -9,7 +9,10 @@ const fs = require('fs').promises;
 const projectRoot = path.resolve(__dirname, '..', '..');
 
 // Configuración de la URL del servidor
-const BASE_URL = process.env.CHAT_SERVICE_URL || 'http://localhost:5000';
+const isProduction = process.env.NODE_ENV === 'production';
+const BASE_URL = isProduction 
+    ? process.env.CHAT_SERVICE_URL 
+    : 'http://localhost:5000';  // Ajusta este puerto si es diferente en tu entorno local
 const SERVER_URL = `${BASE_URL}/images`;
 
 class EmailModule {
@@ -92,36 +95,31 @@ class EmailModule {
             }));
 
             const emailGenerator = this.getEmailGenerator(serviceType);
-            
-            if (typeof emailGenerator.generateEmailContent !== 'function') {
-                throw new Error('generateEmailContent no es una función');
-            }
+        const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL);
 
-            const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL);
+        const imageDir = path.join(projectRoot, 'backend', 'utils', 'images');
+        console.log('Directorio de imágenes:', imageDir);
 
-            const imageDir = path.join(projectRoot, 'backend', 'utils', 'images');
-            console.log('Directorio de imágenes:', imageDir);
+        let imageFiles;
+        try {
+            imageFiles = await fs.readdir(imageDir);
+            console.log('Archivos de imágenes encontrados:', imageFiles);
+        } catch (error) {
+            console.error('Error al leer el directorio de imágenes:', error);
+            imageFiles = [];
+        }
 
-            let imageFiles;
-            try {
-                imageFiles = await fs.readdir(imageDir);
-                console.log('Archivos de imágenes encontrados:', imageFiles);
-            } catch (error) {
-                console.error('Error al leer el directorio de imágenes:', error);
-                imageFiles = [];
-            }
-
-            const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
-            const imageAttachments = imageFiles
-                .filter(file => {
-                    const ext = path.extname(file).toLowerCase();
-                    return allowedExtensions.includes(ext) && file !== '.DS_Store';
-                })
-                .map(file => ({
-                    filename: file,
-                    path: path.join(imageDir, file),
-                    cid: path.parse(file).name // Usar el nombre del archivo sin extensión como CID
-                }));
+        const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
+        const imageAttachments = isProduction ? [] : imageFiles
+            .filter(file => {
+                const ext = path.extname(file).toLowerCase();
+                return allowedExtensions.includes(ext) && file !== '.DS_Store';
+            })
+            .map(file => ({
+                filename: file,
+                path: path.join(imageDir, file),
+                cid: file  // Usar el nombre completo del archivo como CID
+            }));
 
             await this.verifyTransporter();
 

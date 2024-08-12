@@ -1,8 +1,13 @@
 const path = require('path');
 
-// Función que genera el HTML del correo electrónico
+
 function generateEmailHTML(lead, serverUrl) {
-    // Mantén todo el código HTML aquí
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    function getImageSrc(imageName) {
+        return isProduction ? `${serverUrl}/${imageName}` : `cid:${imageName}`;
+    }
+
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -204,7 +209,7 @@ function generateEmailHTML(lead, serverUrl) {
         <div class="card container-custom">
             <!-- Imagen de la cabecera -->
             <div class="header card-img-top position-relative">
-                <img src="${serverUrl}/images/imagen-superior.png" class="header-img">
+                <img src="${getImageSrc('imagen-superior.png')}" class="header-img">
             </div>
             <!-- Texto de la cabecera -->
             <div class="header-text">Transforma tu Experiencia Legal</div>
@@ -242,15 +247,15 @@ function generateEmailHTML(lead, serverUrl) {
         </div>
         <!-- Contenedor de la imagen de servicios -->
         <div class="image-container text-center mt-4">
-            <img src="cid:servicios" alt="Servicios" class="img-fluid">
+            <img src="${getImageSrc('servicios.png')}" alt="Servicios" class="img-fluid">
         </div>
         <!-- Pie de página -->
         <div class="footer text-center mt-4">
-            <img src="cid:logo1" class="logo img-fluid mb-3" alt="Logo Jurídica">
+            <img src="${getImageSrc('logo1.png')}" class="logo img-fluid mb-3" alt="Logo Jurídica">
             <p>Disfruta de una mejor experiencia desde nuestra app</p>
             <div class="app-links d-flex justify-content-center mb-3">
-                <img src="cid:google" alt="Google Play" class="img-fluid mr-2">
-                <img src="cid:app" alt="App Store" class="img-fluid">
+                <img src="${getImageSrc('google.png')}" alt="Google Play" class="img-fluid mr-2">
+                <img src="${getImageSrc('app.png')}" alt="App Store" class="img-fluid">
             </div>
             <p>
                 <a href="#">Aviso Legal</a> | 
