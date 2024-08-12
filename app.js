@@ -90,9 +90,21 @@ console.log("Ruta absoluta de favicon:", faviconPath);
 console.log("Ruta absoluta de landing:", landingPath);
 console.log("Ruta absoluta de images:", imagesPath);
 
+console.log("Contenido del directorio de imágenes:");
+fs.readdir(imagesPath, (err, files) => {
+    if (err) {
+        console.error("Error al leer el directorio de imágenes:", err);
+    } else {
+        console.log(files);
+    }
+});
+
+
 app.use('/favicon', express.static(faviconPath));
-app.use(express.static(landingPath));
+app.use('/', express.static(landingPath));
 app.use('/images', express.static(imagesPath));
+
+
 
 // Healthcheck
 app.get('/healthcheck', (req, res) => {

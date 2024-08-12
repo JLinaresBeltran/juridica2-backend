@@ -13,7 +13,7 @@ const imageDir = path.join(projectRoot, 'utils', 'images');
 
 // Configuración de la URL del servidor
 const BASE_URL = process.env.CHAT_SERVICE_URL || 'http://localhost:5000';
-const SERVER_URL = `${BASE_URL}/images`;
+const SERVER_URL = BASE_URL;
 
 class EmailModule {
     constructor() {
@@ -98,7 +98,7 @@ class EmailModule {
             const emailGenerator = this.getEmailGenerator(serviceType);
         const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL);
 
-        const imageDir = path.join(projectRoot, 'backend', 'utils', 'images');
+        const imageDir = path.join(projectRoot, 'utils', 'images');
         console.log('Directorio de imágenes:', imageDir);
 
         let imageFiles = [];
