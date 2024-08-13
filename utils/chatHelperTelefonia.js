@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const { DocxGenerator, generateComplaintDocx } = require('../utils/docxGenerator');
+const { generateDocx } = require('../utils/GenerateDocx');
 const { sendEmailWithAttachments } = require('../utils/emailModule');
 
 const secretKey = process.env.SECRET_KEY;
@@ -94,7 +94,7 @@ async function processLeadsAndConversations(leads, conversations) {
     const docxPath = path.join(__dirname, 'output.docx');
 
     try {
-        await generateComplaintDocx(complaintContent, docxPath);
+        await generateDocx(complaintContent, docxPath);
 
         const attachments = [
             { filename: 'reclamacion.docx', path: docxPath },
@@ -114,9 +114,6 @@ async function processLeadsAndConversations(leads, conversations) {
 }
 
 function extractComplaintContent(messages) {
-    // Aquí deberías implementar la lógica para extraer la información relevante
-    // de los mensajes y estructurarla en el formato que espera DocxGenerator
-    // Este es un ejemplo simplificado:
     const hechos = [];
     let peticion = '';
     let reference = 'Reclamación de servicios de telefonía';
