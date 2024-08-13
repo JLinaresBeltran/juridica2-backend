@@ -32,10 +32,10 @@ async function processWebhookEvent(req) {
 
 async function handleConversationCompleted(conversation) {
     const conversationId = conversation.id;
-    await delayExecution(() => processConversation(conversationId), 1000); // Añadido delay para probar
+    await delayExecution(() => CommonController(conversationId), 1000); // Añadido delay para probar
 }
 
-async function processConversation(conversationId) {
+async function CommonController(conversationId) {
     const { leads, messages } = await messageService.extractMessagesFromConversation(conversationId);
 
     if (!messages) {

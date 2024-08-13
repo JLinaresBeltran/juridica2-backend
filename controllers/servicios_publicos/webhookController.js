@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const { delayExecution } = require('../../utils/inactivityTimer');
 const { resetInactivityTimer, receiveMessage } = require('../../utils/chatHelperServiciosPublicos');
-const { processConversation } = require('../common/conversationProcessor');
+const CommonController = require('../common/CommonController');
 const { getLeadByConversationId, getConversationById } = require('../../services/common/chatbaseService');
 const SECRET_KEY = process.env.CHATBASE_SECRET_SERVICIOS_PUBLICOS; // Clave específica para servicios públicos
 const serviceType = 'servicios_publicos';
@@ -45,7 +45,7 @@ async function handleLeadsSubmit(payload) {
     const chatbotId = process.env.CHATBOT_ID_SERVICIOS_PUBLICOS;
 
     if (payload.conversationId) {
-        await delayExecution(() => processConversation(payload.conversationId, serviceType));
+        await delayExecution(() => CommonController(payload.conversationId, serviceType));
     } else {
         console.error('El evento de lead.submit no tiene un ID de conversación.');
     }
@@ -61,7 +61,7 @@ async function handleMessageReceived(payload) {
 async function handleConversationCompleted(payload) {
     const conversation = payload.conversation;
     const chatbotId = process.env.CHATBOT_ID_SERVICIOS_PUBLICOS;
-    await delayExecution(() => processConversation(conversation.id, serviceType));
+    await delayExecution(() => CommonController(conversation.id, serviceType));
 }
 
 module.exports = {

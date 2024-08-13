@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 const { delayExecution } = require('../../utils/inactivityTimer');
 const { resetInactivityTimer, receiveMessage } = require('../../utils/chatHelperTelefonia');
-const { processConversation } = require('../common/conversationProcessor');
+const CommonController = require('../common/CommonController');
 const SECRET_KEY = process.env.CHATBASE_SECRET_TELEFONIA;
 const serviceType = 'telefonia';
 
@@ -64,8 +64,8 @@ async function handleLeadsSubmit(payload, chatbotId) {
             documentNumber: payload.documentNumber,
             address: payload.address
         };
-        console.log('[handleLeadsSubmit] Datos del cliente enviados a processConversation:', JSON.stringify(customerData, null, 2));
-        await processConversation(payload.conversationId, serviceType, customerData);
+        console.log('[handleLeadsSubmit] Datos del cliente enviados a CommonController:', JSON.stringify(customerData, null, 2));
+        await CommonController.processConversation(payload.conversationId, serviceType, customerData);
     } else {
         console.error('[handleLeadsSubmit] El evento de lead.submit no tiene un ID de conversación o chatbotId.', JSON.stringify({ payload, chatbotId }, null, 2));
     }
@@ -91,8 +91,8 @@ async function handleConversationCompleted(payload, chatbotId) {
             documentNumber: payload.documentNumber,
             address: payload.address
         };
-        console.log('[handleConversationCompleted] Datos del cliente enviados a processConversation:', JSON.stringify(customerData, null, 2));
-        await processConversation(conversation.id, serviceType, customerData);
+        console.log('[handleConversationCompleted] Datos del cliente enviados a CommonController:', JSON.stringify(customerData, null, 2));
+        await CommonController.processConversation(conversation.id, serviceType, customerData);
     } else {
         console.error('[handleConversationCompleted] El evento de conversation.completed no tiene un ID de conversación o chatbotId.', JSON.stringify({ payload, chatbotId }, null, 2));
     }
@@ -117,14 +117,14 @@ async function handleFormSubmission(formData) {
     console.log('[handleFormSubmission] Datos del cliente preparados:', JSON.stringify(customerData, null, 2));
     
     try {
-      await processConversation(formData.conversationId, 'telefonia', customerData);
-      console.log('[handleFormSubmission] Conversación procesada exitosamente');
-    } catch (error) {
-      console.error('[handleFormSubmission] Error al procesar la conversación:', error);
-      console.error('[handleFormSubmission] Stack trace:', error.stack);
-      throw error;
+        await CommonController.processConversation(formData.conversationId, 'telefonia', customerData);
+        console.log('[handleFormSubmission] Conversación procesada exitosamente');
+      } catch (error) {
+        console.error('[handleFormSubmission] Error al procesar la conversación:', error);
+        console.error('[handleFormSubmission] Stack trace:', error.stack);
+        throw error;
+      }
     }
-  }
 
 module.exports = {
     handleWebhookEvent,
