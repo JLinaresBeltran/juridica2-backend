@@ -91,6 +91,8 @@ class EmailModule {
 
         try {
             const files = await fs.readdir(outputDir);
+            console.log('[emailModule] Archivos encontrados en outputDir:', files);
+
             const attachments = await Promise.all(files.map(async (file) => {
                 const filePath = path.join(outputDir, file);
                 const content = await fs.readFile(filePath);
@@ -100,8 +102,13 @@ class EmailModule {
                 };
             }));
 
+            console.log('[emailModule] Attachments preparados:', attachments.map(a => a.filename));
+
             const emailGenerator = this.getEmailGenerator(serviceType);
             const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL, isProduction);
+
+            console.log('[emailModule] Asunto del correo:', subject);
+            console.log('[emailModule] Contenido HTML del correo (primeros 500 caracteres):', html.substring(0, 500));
 
             let imageFiles = [];
             try {
@@ -112,7 +119,7 @@ class EmailModule {
             }
 
             const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
-            const imageAttachments = isProduction ? [] : imageFiles
+            const imageAttachments = imageFiles
                 .filter(file => {
                     const ext = path.extname(file).toLowerCase();
                     return allowedExtensions.includes(ext) && file !== '.DS_Store';
@@ -123,6 +130,8 @@ class EmailModule {
                     cid: file  // Usar el nombre completo del archivo como CID
                 }));
 
+            console.log('[emailModule] Image attachments:', imageAttachments);
+
             await this.verifyTransporter();
 
             const mailOptions = {
@@ -132,6 +141,12 @@ class EmailModule {
                 html,
                 attachments: [...attachments, ...imageAttachments]
             };
+
+            console.log('[emailModule] Opciones de correo preparadas:', {
+                ...mailOptions,
+                html: mailOptions.html.substring(0, 100) + '...',  // Mostrar solo los primeros 100 caracteres del HTML
+                attachments: mailOptions.attachments.map(a => a.filename || a.cid)
+            });
 
             const info = await this.transporter.sendMail(mailOptions);
             console.log('[emailModule] Correo enviado exitosamente:', info.response);
