@@ -15,6 +15,9 @@ const imageDir = path.join(projectRoot, 'utils', 'images');
 const BASE_URL = process.env.CHAT_SERVICE_URL || 'http://localhost:5000';
 const SERVER_URL = BASE_URL;
 
+// Definir isProduction
+const isProduction = process.env.NODE_ENV === 'production';
+
 class EmailModule {
     constructor() {
         this.transporter = this.createTransporter();
@@ -79,6 +82,8 @@ class EmailModule {
         console.log('[emailModule] ServiceType:', serviceType);
         console.log('[emailModule] SERVER_URL:', SERVER_URL);
         console.log('Directorio de imágenes:', imageDir);
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+        console.log('isProduction:', isProduction);
 
         if (!serviceType) {
             throw new Error('ServiceType es requerido para enviar el email');
@@ -96,32 +101,27 @@ class EmailModule {
             }));
 
             const emailGenerator = this.getEmailGenerator(serviceType);
-        const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL);
+            const { subject, html } = emailGenerator.generateEmailContent(lead, SERVER_URL, isProduction);
 
-        const imageDir = path.join(projectRoot, 'utils', 'images');
-        console.log('Directorio de imágenes:', imageDir);
-
-        let imageFiles = [];
-        if (process.env.NODE_ENV !== 'production') {
+            let imageFiles = [];
             try {
                 imageFiles = await fs.readdir(imageDir);
                 console.log('Archivos de imágenes encontrados:', imageFiles);
             } catch (error) {
                 console.error('Error al leer el directorio de imágenes:', error);
             }
-        }
 
-        const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
-        const imageAttachments = isProduction ? [] : imageFiles
-            .filter(file => {
-                const ext = path.extname(file).toLowerCase();
-                return allowedExtensions.includes(ext) && file !== '.DS_Store';
-            })
-            .map(file => ({
-                filename: file,
-                path: path.join(imageDir, file),
-                cid: file  // Usar el nombre completo del archivo como CID
-            }));
+            const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
+            const imageAttachments = isProduction ? [] : imageFiles
+                .filter(file => {
+                    const ext = path.extname(file).toLowerCase();
+                    return allowedExtensions.includes(ext) && file !== '.DS_Store';
+                })
+                .map(file => ({
+                    filename: file,
+                    path: path.join(imageDir, file),
+                    cid: file  // Usar el nombre completo del archivo como CID
+                }));
 
             await this.verifyTransporter();
 
