@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const { generateDocx } = require('../utils/GenerateDocx');
+const { generateDocx } = require('../utils/generateDocx'); // Cambiado a minúsculas
 const { sendEmailWithAttachments } = require('../utils/emailModule');
 
 const secretKey = process.env.SECRET_KEY;
