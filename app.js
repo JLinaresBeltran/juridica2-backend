@@ -22,9 +22,14 @@ process.on('uncaughtException', (error) => {
     process.exit(1);
 });
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Validación de variables de entorno
 function validateEnv() {
-    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL', 'MONGODB_URI', 'JWT_SECRET'];
+    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL', 'JWT_SECRET'];
+    if (!isProduction) {
+        required.push('MONGODB_URI');
+    }
     for (const variable of required) {
         if (!process.env[variable]) {
             throw new Error(`Environment variable ${variable} is missing`);
@@ -50,29 +55,37 @@ console.log("Variables de Entorno:");
 console.log("PORT:", process.env.PORT);
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("CHAT_SERVICE_URL:", process.env.CHAT_SERVICE_URL);
-console.log("MONGODB_URI:", process.env.MONGODB_URI);
+if (!isProduction) {
+    console.log("MONGODB_URI:", process.env.MONGODB_URI);
+}
 
 // Función de conexión a la base de datos
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Conexión a MongoDB establecida');
-    } catch (err) {
-        console.error('Error al conectar a MongoDB:', err);
-        process.exit(1);
+    if (!isProduction) {
+        try {
+            await mongoose.connect(process.env.MONGODB_URI);
+            console.log('Conexión a MongoDB establecida');
+        } catch (err) {
+            console.error('Error al conectar a MongoDB:', err);
+            process.exit(1);
+        }
+    } else {
+        console.log('Ejecutando en producción sin conexión a MongoDB');
     }
 };
 
 // Conexión a la base de datos
 connectDB();
 
-mongoose.connection.on('connected', () => {
-    console.log('Mongoose connected to db');
-});
+if (!isProduction) {
+    mongoose.connection.on('connected', () => {
+        console.log('Mongoose connected to db');
+    });
 
-mongoose.connection.on('error', (err) => {
-    console.log('Mongoose connection error: ' + err);
-});
+    mongoose.connection.on('error', (err) => {
+        console.log('Mongoose connection error: ' + err);
+    });
+}
 
 // Configuración de CORS
 const corsOptions = {
