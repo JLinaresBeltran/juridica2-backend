@@ -1,0 +1,101 @@
+### Variables globales
+@baseUrl = http://localhost:5000/
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YmNhY2RjZTMxY2NlZjgyMGY1N2E3MSIsImlhdCI6MTcyMzY0MTA1MywiZXhwIjoxNzIzNzI3NDUzfQ.DtEb9FAjdO_BPiBcIsIzz2gRWEfNydTm9eMyoPl4BDo
+
+### Registro de usuario
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "Luis fonsi",
+  "email": "jhonaris@gmail.com",
+  "password": "123"
+}
+
+### Inicio de sesión
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "luis Gomez",
+  "password": "password123"
+}
+
+### Después de ejecutar la solicitud de inicio de sesión, copia el token de la respuesta y reemplázalo en la variable @authToken arriba
+
+### Restablecer contraseña
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "jhonaris8@gmail.com"
+}
+
+### Actualizar perfil de usuario
+PUT {{baseUrl}}/user/profile
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Luis Perez",
+  "phoneNumber": "1234567890",
+  "address": "123 Test St, Test City"
+}
+
+### Actualizar última actividad del usuario 
+### Este endpoint se utiliza para actualizar la marca de tiempo de la última actividad del usuario. 
+### Es una funcionalidad común en muchas aplicaciones web y móviles, y tiene varios propósitos importantes:
+### Seguimiento de actividad del usuario, Manejo de sesiones, Análisis de uso, Funcionalidades de presencia, Seguridad.
+POST {{baseUrl}}/user/activity
+Authorization: Bearer {{authToken}}
+
+### Compra de créditos
+POST {{baseUrl}}/credit/purchase
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "amount": 10
+}
+
+### Consumo de créditos
+POST {{baseUrl}}/credit/consume
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "action": "telefonia"
+}
+
+### Obtener saldo de créditos
+GET {{baseUrl}}/credit/balance
+Authorization: Bearer {{authToken}}
+
+### Ejemplo de consumo de créditos para impugnación de comparendos
+POST {{baseUrl}}/credit/consume
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "action": "impugnacion_comparendos"
+}
+
+### Ejemplo de consumo de créditos para consulta general
+POST {{baseUrl}}/credit/consume
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "action": "consulta_general"
+}
+
+### Ejemplo de consumo de créditos para redacción de documento
+POST {{baseUrl}}/credit/consume
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "action": "redaccion_documento"
+}

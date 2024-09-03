@@ -157,6 +157,42 @@ class EmailModule {
             throw error;
         }
     }
-}
+
+    async sendPasswordResetEmail(lead, token) {
+        console.log('[sendPasswordResetEmail] Iniciando el envío de correo de restablecimiento de contraseña.');
+        
+        try {
+          const resetUrl = `${SERVER_URL}/reset-password/${token}`;
+          
+          const subject = "Restablecimiento de contraseña - Juridica2";
+          const html = `
+            <h1>Restablecimiento de contraseña</h1>
+            <p>Hola ${lead.name},</p>
+            <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
+            <a href="${resetUrl}">Restablecer contraseña</a>
+            <p>Este enlace expirará en 1 hora.</p>
+            <p>Si no solicitaste este restablecimiento, puedes ignorar este correo.</p>
+            <p>Saludos,<br>El equipo de Juridica2</p>
+          `;
+    
+          await this.verifyTransporter();
+    
+          const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: lead.email,
+            subject,
+            html
+          };
+    
+          const info = await this.transporter.sendMail(mailOptions);
+          console.log('[sendPasswordResetEmail] Correo de restablecimiento enviado exitosamente:', info.response);
+          return info;
+        } catch (error) {
+          console.error('[sendPasswordResetEmail] Error:', error.message);
+          console.error('[sendPasswordResetEmail] Stack trace:', error.stack);
+          throw error;
+        }
+      }
+    }
 
 module.exports = new EmailModule();

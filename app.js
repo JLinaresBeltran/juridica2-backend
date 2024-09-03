@@ -5,6 +5,7 @@ const http = require('http');
 const cors = require('cors');
 const fs = require('fs');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const mongoose = require('mongoose');
 
 console.log('Iniciando aplicación...');
 console.log('Directorio actual:', __dirname);
@@ -15,9 +16,15 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+// Manejo de excepciones no capturadas
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
+});
+
 // Validación de variables de entorno
 function validateEnv() {
-    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL'];
+    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL', 'MONGODB_URI', 'JWT_SECRET'];
     for (const variable of required) {
         if (!process.env[variable]) {
             throw new Error(`Environment variable ${variable} is missing`);
@@ -27,10 +34,15 @@ function validateEnv() {
 
 validateEnv();
 
+// Importación de middlewares y rutas
 const { logRouteMiddleware, errorHandler, notFoundHandler } = require('./middlewares/commonMiddlewares');
 const telefoniaRoutes = require('./routes/telefoniaRoutes');
 const serviciosPublicosRoutes = require('./routes/serviciosPublicosRoutes');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+const creditRoutes = require('./routes/credit');
 
+// Inicialización de la aplicación Express
 const app = express();
 
 console.log("Configurando variables de entorno");
@@ -38,6 +50,29 @@ console.log("Variables de Entorno:");
 console.log("PORT:", process.env.PORT);
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("CHAT_SERVICE_URL:", process.env.CHAT_SERVICE_URL);
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+
+// Función de conexión a la base de datos
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('Conexión a MongoDB establecida');
+    } catch (err) {
+        console.error('Error al conectar a MongoDB:', err);
+        process.exit(1);
+    }
+};
+
+// Conexión a la base de datos
+connectDB();
+
+mongoose.connection.on('connected', () => {
+    console.log('Mongoose connected to db');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.log('Mongoose connection error: ' + err);
+});
 
 // Configuración de CORS
 const corsOptions = {
@@ -45,7 +80,8 @@ const corsOptions = {
         'https://www.juridicaenlinea.co', 
         'http://www.juridicaenlinea.co',
         'https://juridica2-chat-3d0a7f266d9c.herokuapp.com',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'https://localhost:3000'
     ],
     optionsSuccessStatus: 200,
     credentials: true,
@@ -53,15 +89,19 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+// Aplicar middlewares globales
 app.use(cors(corsOptions));
-console.log("CORS configurado con:", corsOptions);
-
 app.use(express.json({ limit: '50mb' }));
+
+console.log("CORS configurado con:", corsOptions);
 
 // Logging mejorado
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
-    console.log('Headers:', req.headers);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    if (req.body) {
+        console.log('Body:', JSON.stringify(req.body, null, 2));
+    }
     next();
 });
 
@@ -99,12 +139,9 @@ fs.readdir(imagesPath, (err, files) => {
     }
 });
 
-
 app.use('/favicon', express.static(faviconPath));
 app.use('/', express.static(landingPath));
 app.use('/images', express.static(imagesPath));
-
-
 
 // Healthcheck
 app.get('/healthcheck', (req, res) => {
@@ -124,6 +161,23 @@ console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
 // Rutas de la aplicación
 app.use('/telefonia', logRouteMiddleware('/telefonia'), telefoniaRoutes);
 app.use('/servicios-publicos', logRouteMiddleware('/servicios-publicos'), serviciosPublicosRoutes);
+
+// Rutas para el Sistema de Autenticación y Créditos de Usuario
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/credit', creditRoutes);
+
+// Función para imprimir las rutas registradas
+function printRoutes(app) {
+    app._router.stack.forEach(function(r){
+        if (r.route && r.route.path){
+            console.log('Route registered:', r.route.path)
+        }
+    })
+}
+
+// Imprimir las rutas registradas
+printRoutes(app);
 
 // Manejar todas las demás rutas
 app.get('*', (req, res) => {
@@ -149,6 +203,9 @@ server.listen(PORT, () => {
     console.log('- /telefonia');
     console.log('- /servicios-publicos');
     console.log('- /chat (proxy al frontend)');
+    console.log('- /api/auth');
+    console.log('- /api/user');
+    console.log('- /api/credit');
     console.log('- /healthcheck');
 });
 
