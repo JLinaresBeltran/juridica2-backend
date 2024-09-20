@@ -99,3 +99,112 @@ Content-Type: application/json
 {
   "action": "redaccion_documento"
 }
+
+@baseUrl = http://localhost:5000/api/orientador-legal
+
+@baseUrl = http://localhost:5000/api/agente-legal
+@authToken = su_token_de_autenticacion_aqui
+
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+### Test de extracción relevante de información 1
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuáles son los requisitos para ser elegido Presidente de Colombia?"
+}
+// La respuesta relevante se encuentra en el Artículo 191 de la Constitución.
+
+
+### Test de extracción relevante de información 2
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cómo se elige al Fiscal General de la Nación?"
+}
+// La información relevante está en el Artículo 249 de la Constitución.
+
+
+### Test de extracción relevante de información 3
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Qué derechos tienen los niños según la Constitución colombiana?"
+}
+// Los derechos de los niños se enumeran en el Artículo 44 de la Constitución.
+
+
+### Test de extracción relevante de información 4
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuál es el proceso para declarar el estado de conmoción interior?"
+}
+// El proceso se detalla en el Artículo 213 de la Constitución.
+
+
+### Test de extracción relevante de información 5
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cómo se conforma el Consejo Superior de la Judicatura?"
+}
+// La composición del Consejo se describe en el Artículo 254 de la Constitución.
+
+
+### Test de extracción relevante de información 6
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuáles son las funciones del Procurador General de la Nación?"
+}
+// Las funciones se enumeran en el Artículo 278 de la Constitución.
+
+
+### Test de extracción relevante de información 7
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Qué dice la Constitución sobre la extradición?"
+}
+// Las disposiciones sobre extradición se encuentran en el Artículo 35 de la Constitución.
+
+
+### Test de extracción relevante de información 8
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cómo se realiza una reforma constitucional en Colombia?"
+}
+// Los procedimientos para la reforma constitucional están en los Artículos 374 a 379 de la Constitución.
+
+
+### Test de extracción relevante de información 9
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuáles son los deberes del ciudadano colombiano según la Constitución?"
+}
+// Los deberes del ciudadano están enumerados en el Artículo 95 de la Constitución.
+
+
+### Test de extracción relevante de información 10
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Qué establece la Constitución sobre la propiedad intelectual?"
+}
+// Las disposiciones sobre propiedad intelectual se encuentran en el Artículo 61 de la Constitución.
+
+

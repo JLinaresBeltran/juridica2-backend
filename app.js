@@ -6,6 +6,7 @@ const cors = require('cors');
 const fs = require('fs');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const mongoose = require('mongoose');
+const { initializeLegalAdvisor } = require('./utils/legalAdvisor');
 
 console.log('Iniciando aplicación...');
 console.log('Directorio actual:', __dirname);
@@ -26,7 +27,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Validación de variables de entorno
 function validateEnv() {
-    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL', 'JWT_SECRET'];
+    const required = ['PORT', 'NODE_ENV', 'CHAT_SERVICE_URL', 'JWT_SECRET', 'OPENAI_API_KEY'];
     if (!isProduction) {
         required.push('MONGODB_URI');
     }
@@ -46,6 +47,8 @@ const serviciosPublicosRoutes = require('./routes/serviciosPublicosRoutes');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const creditRoutes = require('./routes/credit');
+const almacenamientoVectorial = require('./almacenamiento/almacenamientoVectorial');
+const rutasChatJuridico = require('./routes/rutasChatJuridico');
 
 // Inicialización de la aplicación Express
 const app = express();
@@ -104,7 +107,15 @@ const corsOptions = {
 
 // Aplicar middlewares globales
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '50mb' }));
+
+// Middleware para parsear JSON con manejo de errores
+app.use(express.json({ limit: '50mb' }), (err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        console.error('JSON Parse Error:', err);
+        return res.status(400).json({ error: 'Invalid JSON', details: err.message });
+    }
+    next();
+});
 
 console.log("CORS configurado con:", corsOptions);
 
@@ -174,11 +185,37 @@ console.log(`Chat proxy configurado para: ${process.env.CHAT_SERVICE_URL}`);
 // Rutas de la aplicación
 app.use('/telefonia', logRouteMiddleware('/telefonia'), telefoniaRoutes);
 app.use('/servicios-publicos', logRouteMiddleware('/servicios-publicos'), serviciosPublicosRoutes);
-
-// Rutas para el Sistema de Autenticación y Créditos de Usuario
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/credit', creditRoutes);
+app.use('/api/chat-juridico', rutasChatJuridico);
+
+// Inicializar el asesor jurídico AI
+let legalAdvisor;
+(async () => {
+  try {
+    legalAdvisor = await initializeLegalAdvisor();
+    console.log("Asesor jurídico AI con GPT-4 inicializado y listo para usar.");
+  } catch (error) {
+    console.error("Error al inicializar el asesor jurídico con GPT-4:", error);
+  }
+})();
+
+// Nueva ruta para el asesor jurídico AI
+app.post('/api/legal-advice', async (req, res) => {
+    if (!legalAdvisor) {
+        return res.status(503).json({ error: 'El asesor jurídico aún no está listo.' });
+    }
+
+    const { question } = req.body;
+    try {
+        const response = await legalAdvisor(question);
+        res.json({ answer: response });
+    } catch (error) {
+        console.error('Error in legal advisor:', error);
+        res.status(500).json({ error: 'An error occurred while processing your request' });
+    }
+});
 
 // Función para imprimir las rutas registradas
 function printRoutes(app) {
@@ -201,6 +238,13 @@ app.get('*', (req, res) => {
     }
 });
 
+// Inicializar el almacenamiento vectorial
+almacenamientoVectorial.inicializar().then(() => {
+  console.log('Almacenamiento vectorial inicializado');
+}).catch(error => {
+  console.error('Error al inicializar el almacenamiento vectorial:', error);
+});
+
 // Middleware para manejar rutas no encontradas y errores
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -219,6 +263,8 @@ server.listen(PORT, () => {
     console.log('- /api/auth');
     console.log('- /api/user');
     console.log('- /api/credit');
+    console.log('- /api/chat-juridico');
+    console.log('- /api/legal-advice (Nuevo asesor jurídico AI)');
     console.log('- /healthcheck');
 });
 

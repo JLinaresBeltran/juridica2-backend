@@ -1,0 +1,26 @@
+{
+  "codigos_generales": {
+    "codigo_civil.txt": true,
+    "codigo_comercio.txt": true,
+    "codigo_contencioso_administrativo.txt": true,
+    "codigo_disciplinario_unico.txt": true,
+    "codigo_electoral.txt": true,
+    "codigo_general_proceso.txt": true,
+    "codigo_penal.txt": true,
+    "codigo_procedimiento_penal.txt": true
+  },
+  "codigos_especiales": {
+    "codigo_infancia_adolescencia.txt": true,
+    "codigo_minas.txt": true,
+    "codigo_penal_militar.txt": true,
+    "codigo_penitenciario_carcelario.txt": true,
+    "codigo_policia_convivencia.txt": true,
+    "codigo_procesal_trabajo_seguridad_social.txt": true,
+    "codigo_recursos_naturales.txt": true,
+    "codigo_sustantivo_trabajo.txt": true,
+    "codigo_transito_terrestre.txt": true
+  },
+  "constitucion": {
+    "constitucion_politica_1991.txt": true
+  }
+}

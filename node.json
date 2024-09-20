@@ -1,6 +1,19 @@
 {
-  "watch": ["app.js", "controllers", "services", "utils", "templates", "routes"],
-  "ext": "js,json",
-  "ignore": ["node_modules"],
-  "exec": "node app.js"
+  "ignore": [
+    "node_modules",
+    "data/*",
+    "*.json",
+    "*.log"
+  ],
+  "ext": "js",
+  "watch": [
+    "app.js",
+    "routes",
+    "controllers",
+    "utils",
+    "middlewares"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
 }
