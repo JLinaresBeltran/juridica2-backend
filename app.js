@@ -7,6 +7,8 @@ const fs = require('fs');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const mongoose = require('mongoose');
 const { initializeLegalAdvisor } = require('./utils/legalAdvisor');
+const AlmacenamientoVectorial = require('./almacenamiento/almacenamientoVectorial');
+
 
 console.log('Iniciando aplicación...');
 console.log('Directorio actual:', __dirname);
@@ -47,7 +49,6 @@ const serviciosPublicosRoutes = require('./routes/serviciosPublicosRoutes');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const creditRoutes = require('./routes/credit');
-const almacenamientoVectorial = require('./almacenamiento/almacenamientoVectorial');
 const rutasChatJuridico = require('./routes/rutasChatJuridico');
 
 // Inicialización de la aplicación Express
@@ -217,6 +218,38 @@ app.post('/api/legal-advice', async (req, res) => {
     }
 });
 
+// Nuevas rutas para agregar y eliminar códigos
+app.post('/api/agregar-codigo', async (req, res) => {
+    try {
+        const { rutaArchivo, categoria } = req.body;
+        if (!rutaArchivo || !categoria) {
+            return res.status(400).json({ error: 'Se requiere rutaArchivo y categoria' });
+        }
+        await AlmacenamientoVectorial.agregarCodigo(rutaArchivo, categoria);
+        res.json({ message: 'Código agregado exitosamente' });
+    } catch (error) {
+        console.error('Error al agregar código:', error);
+        res.status(500).json({ error: 'Error al agregar código' });
+    }
+});
+
+app.post('/api/eliminar-codigo', async (req, res) => {
+    try {
+      const { nombreArchivo } = req.body;
+      if (!nombreArchivo) {
+        return res.status(400).json({ error: 'Se requiere nombreArchivo' });
+      }
+      
+      await AlmacenamientoVectorial.eliminarCodigo(nombreArchivo);
+      await AlmacenamientoVectorial.verificarIntegridadAlmacenamiento();
+      
+      res.json({ message: 'Código eliminado exitosamente' });
+    } catch (error) {
+      console.error('Error al eliminar código:', error);
+      res.status(500).json({ error: 'Error al eliminar código', details: error.message });
+    }
+  });
+
 // Función para imprimir las rutas registradas
 function printRoutes(app) {
     app._router.stack.forEach(function(r){
@@ -239,7 +272,7 @@ app.get('*', (req, res) => {
 });
 
 // Inicializar el almacenamiento vectorial
-almacenamientoVectorial.inicializar().then(() => {
+AlmacenamientoVectorial.inicializar().then(() => {
   console.log('Almacenamiento vectorial inicializado');
 }).catch(error => {
   console.error('Error al inicializar el almacenamiento vectorial:', error);
@@ -265,6 +298,8 @@ server.listen(PORT, () => {
     console.log('- /api/credit');
     console.log('- /api/chat-juridico');
     console.log('- /api/legal-advice (Nuevo asesor jurídico AI)');
+    console.log('- /api/agregar-codigo (Agregar nuevo código)');
+    console.log('- /api/eliminar-codigo (Eliminar código existente)');
     console.log('- /healthcheck');
 });
 

@@ -208,3 +208,82 @@ Content-Type: application/json
 // Las disposiciones sobre propiedad intelectual se encuentran en el Artículo 61 de la Constitución.
 
 
+### Test de extracción relevante de información 11
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuales son los requisitos que debe contener una demanda?"
+}
+
+### Test de extracción relevante de información 12
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cual es la procedencia en la acumulacion de procesos declarativos?"
+}
+
+
+// La procedencia se encuentra en el articulo 148 del C.G.P.
+
+### Test de extracción relevante de información 13
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Cuales son los efectos en que se concede una apelación?"
+}
+
+### Test de extracción relevante de información 13
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Que es el debido proceso?"
+}
+
+// Articulo 28 Constitucion y 14 C.G.P.
+
+
+### Test de extracción relevante de información 13
+POST http://localhost:5000/api/legal-advice
+Content-Type: application/json
+
+{
+    "question": "¿Como procede interposicion del recurso de apelacion en los procesoso de minima cuantia, analiza las cuantias del articulo 25?"
+}
+
+// Articulo 28 Constitucion y 14 C.G.P.
+
+
+
+### Agregar Codigo
+POST http://localhost:5000/api/agregar-codigo
+Content-Type: application/json
+
+{
+  "rutaArchivo": "data/codigos_especiales/codigo_minas.txt",
+  "categoria": "codigos_especiales"
+}
+
+
+### Actualizar un Codigo
+POST http://localhost:5000/api/chat-juridico/actualizar-codigo
+Content-Type: application/json
+
+{
+  "rutaArchivo": "data/constitucion/constitucion_politica_1991.txt",
+  "categoria": "constitucion"
+}
+
+
+### Eliminar codigo
+POST http://localhost:5000/api/eliminar-codigo
+Content-Type: application/json
+
+{
+  "nombreArchivo": "constitucion_politica_1991.txt"
+}
+
+// La información proporcionada no incluye disposiciones específicas sobre el recurso de apelación en los procesos de mínima cuantía. Sin embargo, en términos generales, el recurso de apelación es procedente contra las decisiones que sean desfavorables para una de las partes, siempre que se cumplan los requisitos establecidos en la ley.\n\nPara determinar la procedencia del recurso de apelación en procesos de mínima cuantía, se debe considerar si la decisión apelada es susceptible de apelación según las normas aplicables a este tipo de procesos. En Colombia, los procesos de mínima cuantía suelen tener un régimen especial que puede limitar la posibilidad de interponer recursos, incluyendo la apelación.\n\nPor lo tanto, para responder de manera precisa sobre cómo procede el recurso de apelación en procesos de mínima cuantía, sería necesario consultar el Código General del Proceso o la normativa específica que rige estos procesos.

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ControladorChatJuridico = require('../controllers/common/ControladorChatJuridico');
 const { initializeLegalAdvisor } = require('../utils/legalAdvisor');
+const AlmacenamientoVectorial = require('../almacenamiento/almacenamientoVectorial'); // Asegúrate de importar correctamente
 
 let legalAdvisor;
 
@@ -32,4 +33,18 @@ router.post('/legal-advice', async (req, res) => {
     }
 });
 
-module.exports = router;
+router.post('/actualizar-codigo', async (req, res) => {
+    try {
+      const { rutaArchivo, categoria } = req.body;
+      if (!rutaArchivo || !categoria) {
+        return res.status(400).json({ error: 'Se requiere rutaArchivo y categoria' });
+      }
+      await AlmacenamientoVectorial.actualizarCodigo(rutaArchivo, categoria);
+      res.json({ message: 'Código actualizado exitosamente' });
+    } catch (error) {
+      console.error('Error al actualizar código:', error);
+      res.status(500).json({ error: 'Error al actualizar código', details: error.message });
+    }
+  });
+  
+  module.exports = router;
